@@ -72,7 +72,7 @@ def getRLE(path_list_test,preds_test_upsampled):
         new_test_ids.extend([os.path.basename(os.path.normpath(str(id_)))] * len(rle))
     return new_test_ids,rles
 
-def plotResult(preds_test_t,X_test): #comm
+def plotResult(preds_test_t,X_test):
     for i in range(len(preds_test_t)):
         plt.subplot(1,2,1)
         imshow(np.squeeze(preds_test_t[i]))
