@@ -22,6 +22,8 @@ def loadPreparedData():
     sizes_test=np.load('sizes_test.npy')
     return X_test,X_train,Y_train,sizes_test
 
+def normalize_imgs(data):
+    return data.astype(np.float32)/data.max()
 
 def rle_encoding(x):
     dots = np.where(x.T.flatten() == 1)[0]
@@ -78,6 +80,11 @@ def plotResult(preds_test_t,X_test):
         imshow(X_test[i])
         plt.show()
 
+def invertImgs(X):
+    X = np.array(list(map(lambda x: 1. - x if np.mean(x) > 0.5 else x, X)))
+    return normalize_imgs(X)
+
+
 def PreprocessData(path_list,label=True):
     X = np.zeros((len(path_list), 128, 128, 3),dtype=np.uint8)
     Y = np.zeros((len(path_list), 128, 128, 1),dtype=np.bool)
@@ -98,6 +105,9 @@ def PreprocessData(path_list,label=True):
                 mask_img=np.expand_dims(mask_img,axis=-1)
                 mask=np.maximum(mask,mask_img)
             Y[i]=mask
+    X = normalize_imgs(X)
+    X = invertImgs(X)
+
     if(label):
         return X, Y
     else:
