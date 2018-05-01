@@ -1,5 +1,7 @@
 # [2018 Data Science Bowl - kaggle competiton.](https://www.kaggle.com/c/data-science-bowl-2018#description)
 
+If you want to run this on your computer first you need download the [data](https://drive.google.com/open?id=16k6roYNXx5vQGJK2pu8KC1PbN5Rorkwm), and place all the files in main folder.
+
 ## 1.Introduction
   Imagine speeding up research for almost every disease, from lung cancer and heart disease to rare disorders. The 2018 Data Science Bowl offers our most ambitious mission yet: create an algorithm to automate nucleus detection.
 
