@@ -19,45 +19,50 @@ def mean_iou(y_true, y_pred):
 
 def get_unet(width,height,channels):
     inputs = Input((width, height, channels))
-    conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(inputs)
-    conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv1)
-    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
 
-    conv2 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool1)
-    conv2 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv2)
-    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+    c1 = Conv2D(8, (3, 3), activation='relu', padding='same') (inputs)
+    c1 = Conv2D(8, (3, 3), activation='relu', padding='same') (c1)
+    p1 = MaxPooling2D((2, 2)) (c1)
 
-    conv3 = Conv2D(128, (3, 3), activation='relu', padding='same')(pool2)
-    conv3 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv3)
-    pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
+    c2 = Conv2D(16, (3, 3), activation='relu', padding='same') (p1)
+    c2 = Conv2D(16, (3, 3), activation='relu', padding='same') (c2)
+    p2 = MaxPooling2D((2, 2)) (c2)
 
-    conv4 = Conv2D(256, (3, 3), activation='relu', padding='same')(pool3)
-    conv4 = Conv2D(256, (3, 3), activation='relu', padding='same')(conv4)
-    pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
+    c3 = Conv2D(32, (3, 3), activation='relu', padding='same') (p2)
+    c3 = Conv2D(32, (3, 3), activation='relu', padding='same') (c3)
+    p3 = MaxPooling2D((2, 2)) (c3)
 
-    conv5 = Conv2D(512, (3, 3), activation='relu', padding='same')(pool4)
-    conv5 = Conv2D(512, (3, 3), activation='relu', padding='same')(conv5)
+    c4 = Conv2D(64, (3, 3), activation='relu', padding='same') (p3)
+    c4 = Conv2D(64, (3, 3), activation='relu', padding='same') (c4)
+    p4 = MaxPooling2D(pool_size=(2, 2)) (c4)
 
-    up6 = concatenate([Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(conv5), conv4], axis=3)
-    conv6 = Conv2D(256, (3, 3), activation='relu', padding='same')(up6)
-    conv6 = Conv2D(256, (3, 3), activation='relu', padding='same')(conv6)
+    c5 = Conv2D(128, (3, 3), activation='relu', padding='same') (p4)
+    c5 = Conv2D(128, (3, 3), activation='relu', padding='same') (c5)
 
-    up7 = concatenate([Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(conv6), conv3], axis=3)
-    conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(up7)
-    conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv7)
+    u6 = Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same') (c5)
+    u6 = concatenate([u6, c4])
+    c6 = Conv2D(64, (3, 3), activation='relu', padding='same') (u6)
+    c6 = Conv2D(64, (3, 3), activation='relu', padding='same') (c6)
 
-    up8 = concatenate([Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(conv7), conv2], axis=3)
-    conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(up8)
-    conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv8)
+    u7 = Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same') (c6)
+    u7 = concatenate([u7, c3])
+    c7 = Conv2D(32, (3, 3), activation='relu', padding='same') (u7)
+    c7 = Conv2D(32, (3, 3), activation='relu', padding='same') (c7)
 
-    up9 = concatenate([Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same')(conv8), conv1], axis=3)
-    conv9 = Conv2D(32, (3, 3), activation='relu', padding='same')(up9)
-    conv9 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv9)
+    u8 = Conv2DTranspose(16, (2, 2), strides=(2, 2), padding='same') (c7)
+    u8 = concatenate([u8, c2])
+    c8 = Conv2D(16, (3, 3), activation='relu', padding='same') (u8)
+    c8 = Conv2D(16, (3, 3), activation='relu', padding='same') (c8)
 
-    conv10 = Conv2D(1, (1, 1), activation='sigmoid')(conv9)
+    u9 = Conv2DTranspose(8, (2, 2), strides=(2, 2), padding='same') (c8)
+    u9 = concatenate([u9, c1], axis=3)
+    c9 = Conv2D(8, (3, 3), activation='relu', padding='same') (u9)
+    c9 = Conv2D(8, (3, 3), activation='relu', padding='same') (c9)
 
-    model = Model(inputs=[inputs], outputs=[conv10])
+    outputs = Conv2D(1, (1, 1), activation='sigmoid') (c9)
 
+    model = Model(inputs=[inputs], outputs=[outputs])
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[mean_iou])
     model.summary()
+
     return model
